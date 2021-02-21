@@ -1,19 +1,14 @@
 pipeline {
     agent any
+    def app
     stages {
-        stage('Build') {
-            steps {
-                sh 'mvn clean install'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                script {
+                    app = docker.build 'ruggerii/jenkins-maven-jdk11'
+                    docker.withRegistry('', 'ruggerii')
+                    app.push('test')
+                }
             }
         }
     }
